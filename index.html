@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vectorizador de Imágenes a SVG Profesional</title>
+    <title>Vectorizador de Imágenes a SVG Profesional 1:1</title>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,16 +29,14 @@
     <!-- Font Awesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- ImageTracer JS Vectorization Engine with Fallback -->
+    <!-- ImageTracer JS Vectorization Engine with CDN Fallback -->
     <script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.min.js"></script>
     <script>
-        // Fallback CDN script loader if primary CDN fails
         if (typeof ImageTracer === 'undefined') {
             document.write('<script src="https://unpkg.com/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"><\/script>');
         }
     </script>
 
-    <!-- Custom CSS & Viewport Styling -->
     <style>
         /* Custom scrollbars */
         ::-webkit-scrollbar {
@@ -121,14 +119,14 @@
         .wireframe-mode path {
             fill: rgba(34, 197, 94, 0.08) !important;
             stroke: #22c55e !important;
-            stroke-width: 0.8px !important;
+            stroke-width: 0.5px !important;
         }
 
         /* SVG Inner Responsive Fit */
         #svgContainer svg, #splitSvgWrapper svg {
             width: 100% !important;
             height: auto !important;
-            max-height: 60vh !important;
+            max-height: 55vh !important;
             object-fit: contain !important;
             display: block !important;
             margin: 0 auto;
@@ -148,7 +146,6 @@
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-slate-950">
 
-    <!-- Application Header -->
     <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-30 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 shadow-lg shadow-emerald-500/20">
@@ -157,23 +154,23 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent leading-tight">
-                        Vectorizador SVG
+                        Vectorizador SVG 1:1
                     </h1>
                     <span id="headerStatusBadge" class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Listo
                     </span>
                 </div>
-                <p class="text-xs text-slate-400 hidden sm:block">Convierte imágenes PNG/JPG a vectores escalables SVG</p>
+                <p class="text-xs text-slate-400 hidden sm:block">Delineado fino en escala exacta 1:1 (Compatible con Photoshop / Illustrator)</p>
             </div>
         </div>
 
         <div class="flex items-center space-x-2">
             <!-- Preset Samples Quick Selector -->
             <div class="hidden md:flex items-center space-x-1 text-xs bg-slate-800/80 p-1 rounded-lg border border-slate-700">
-                <span class="text-slate-400 px-2 font-medium">Probar Ejemplos:</span>
+                <span class="text-slate-400 px-2 font-medium">Ejemplos:</span>
+                <button onclick="loadSample('bee')" class="px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 transition font-semibold border border-amber-500/30">🐝 Abeja HD</button>
                 <button onclick="loadSample('logo')" class="px-2.5 py-1 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-200 transition font-medium">Logotipo</button>
                 <button onclick="loadSample('icon')" class="px-2.5 py-1 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-200 transition font-medium">Icono B/N</button>
-                <button onclick="loadSample('art')" class="px-2.5 py-1 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-200 transition font-medium">Ilustración</button>
             </div>
 
             <button onclick="toggleHelpModal()" class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
@@ -188,7 +185,6 @@
         </div>
     </header>
 
-    <!-- MAIN APP WRAPPER -->
     <main id="editor" class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
 
         <!-- SIDEBAR CONTROLS -->
@@ -218,7 +214,7 @@
                         </div>
                     </div>
 
-                    <!-- Loaded File Info View (Dynamically updated) -->
+                    <!-- Loaded File Info View -->
                     <div id="loadedFileInfo" class="hidden flex items-center gap-3 text-left">
                         <img id="sidebarPreviewImg" class="w-14 h-14 object-cover rounded-lg border border-emerald-500/50 bg-slate-950 flex-shrink-0" alt="Vista previa">
                         <div class="flex-1 min-w-0">
@@ -236,8 +232,15 @@
 
             <!-- PRESETS QUICK SELECTOR -->
             <div class="p-4 border-b border-slate-800">
-                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perfil de Vectorización</label>
+                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Perfil de Trazado</label>
                 <div class="grid grid-cols-2 gap-2">
+                    <button onclick="applyPreset('fine_art')" class="preset-btn p-2.5 rounded-lg bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/50 text-left transition flex items-center gap-2">
+                        <i class="fa-solid fa-gem text-emerald-400 text-sm"></i>
+                        <div>
+                            <p class="text-xs font-bold text-slate-200">Delineado Fino 1:1</p>
+                            <p class="text-[10px] text-emerald-400 font-medium">Original / 48 col.</p>
+                        </div>
+                    </button>
                     <button onclick="applyPreset('logo')" class="preset-btn p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500 text-left transition flex items-center gap-2">
                         <i class="fa-solid fa-shapes text-emerald-400 text-sm"></i>
                         <div>
@@ -252,84 +255,92 @@
                             <p class="text-[10px] text-slate-400">Blanco y negro</p>
                         </div>
                     </button>
-                    <button onclick="applyPreset('detailed')" class="preset-btn p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500 text-left transition flex items-center gap-2">
-                        <i class="fa-solid fa-camera text-purple-400 text-sm"></i>
+                    <button onclick="applyPreset('max_colors')" class="preset-btn p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500 text-left transition flex items-center gap-2">
+                        <i class="fa-solid fa-palette text-purple-400 text-sm"></i>
                         <div>
-                            <p class="text-xs font-bold text-slate-200">Alta Fidelidad</p>
-                            <p class="text-[10px] text-slate-400">32 colores</p>
-                        </div>
-                    </button>
-                    <button onclick="applyPreset('artistic')" class="preset-btn p-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-emerald-500 text-left transition flex items-center gap-2">
-                        <i class="fa-solid fa-palette text-amber-400 text-sm"></i>
-                        <div>
-                            <p class="text-xs font-bold text-slate-200">Ilustración</p>
-                            <p class="text-[10px] text-slate-400">Suavizado</p>
+                            <p class="text-xs font-bold text-slate-200">Máx Colores (64)</p>
+                            <p class="text-[10px] text-slate-400">Detalle fotográfico</p>
                         </div>
                     </button>
                 </div>
             </div>
 
-            <!-- PARAMETERS ACCORDION / CONTROLS -->
             <div class="p-4 space-y-5 flex-1">
                 
-                <!-- Group 1: Color & Palette -->
+                <!-- Group 1: Scale & Size Options -->
                 <div class="space-y-3">
                     <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-palette"></i> Paleta y Colores
+                        <i class="fa-solid fa-ruler-combined"></i> Escala e Intrinseca
+                    </label>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-200">Mantener Tamaño Exacto (1:1)</span>
+                            <input type="checkbox" id="keepExactSize" checked onchange="autoProcess()" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer">
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-normal">
+                            Asegura que el archivo SVG mantenga exactamente el mismo ancho y alto en píxeles que la imagen original al abrirlo en Photoshop.
+                        </p>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Group 2: Color & Palette -->
+                <div class="space-y-3">
+                    <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-palette"></i> Paleta y Nitidez Cromática
                     </label>
 
                     <!-- Number of Colors Slider -->
                     <div>
                         <div class="flex justify-between text-xs text-slate-300 mb-1">
                             <span>Número de Colores:</span>
-                            <span id="numColorsVal" class="font-mono text-emerald-400 font-bold">16</span>
+                            <span id="numColorsVal" class="font-mono text-emerald-400 font-bold">48</span>
                         </div>
-                        <input type="range" id="numberofcolors" min="2" max="64" value="16" step="1"
+                        <input type="range" id="numberofcolors" min="2" max="64" value="48" step="1"
                                oninput="document.getElementById('numColorsVal').textContent = this.value"
                                onchange="autoProcess()"
                                class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
-                    <!-- Min Color Ratio / Filtering -->
+                    <!-- Saturation / Color boost -->
                     <div>
                         <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Filtrado de Colores Secundarios:</span>
-                            <span id="minColorVal" class="font-mono text-slate-400">0.02</span>
+                            <span>Realce de Color (Saturación):</span>
+                            <span id="colorBoostVal" class="font-mono text-slate-400">+15%</span>
                         </div>
-                        <input type="range" id="mincolorratio" min="0" max="0.1" value="0.02" step="0.005"
-                               oninput="document.getElementById('minColorVal').textContent = this.value"
+                        <input type="range" id="colorBoost" min="0" max="100" value="15" step="5"
+                               oninput="document.getElementById('colorBoostVal').textContent = '+' + this.value + '%'"
                                onchange="autoProcess()"
                                class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                    </div>
+
+                    <!-- Super Sample Auto Toggle -->
+                    <div class="flex items-center justify-between pt-1">
+                        <div>
+                            <span class="text-xs text-slate-200 font-semibold block">Suavizado Bicúbico Interno (4X)</span>
+                            <span class="text-[10px] text-slate-400 block">Procesa en alta definición y ajusta a escala 1:1</span>
+                        </div>
+                        <input type="checkbox" id="enableSuperSample" checked onchange="autoProcess()" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer">
                     </div>
                 </div>
 
                 <hr class="border-slate-800">
 
-                <!-- Group 2: Path Precision & Smoothness -->
+                <!-- Group 3: Path Precision & Smoothness -->
                 <div class="space-y-3">
                     <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-bezier-curve"></i> Curvas y Trazado
+                        <i class="fa-solid fa-bezier-curve"></i> Precision de Delineado
                     </label>
-
-                    <!-- Blur Pre-processing -->
-                    <div>
-                        <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Suavizado Inicial (Blur):</span>
-                            <span id="blurRadiusVal" class="font-mono text-slate-400">0 px</span>
-                        </div>
-                        <input type="range" id="blurradius" min="0" max="5" value="0" step="1"
-                               oninput="document.getElementById('blurRadiusVal').textContent = this.value + ' px'"
-                               onchange="autoProcess()"
-                               class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
-                    </div>
 
                     <!-- Min Area Omit Threshold -->
                     <div>
                         <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Filtro de Ruido (Puntos pequeños):</span>
-                            <span id="pathOmitVal" class="font-mono text-slate-400">8 px</span>
+                            <span>Filtro de Ruido (Omisión de Puntos):</span>
+                            <span id="pathOmitVal" class="font-mono text-slate-400">2 px</span>
                         </div>
-                        <input type="range" id="pathomit" min="0" max="64" value="8" step="2"
+                        <input type="range" id="pathomit" min="0" max="32" value="2" step="1"
                                oninput="document.getElementById('pathOmitVal').textContent = this.value + ' px'"
                                onchange="autoProcess()"
                                class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
@@ -338,11 +349,23 @@
                     <!-- Curve Error Threshold -->
                     <div>
                         <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Tolerancia de Curvatura:</span>
-                            <span id="qtresVal" class="font-mono text-slate-400">1</span>
+                            <span>Ajuste Fino de Curvas (Tolerancia):</span>
+                            <span id="qtresVal" class="font-mono text-slate-400">0.2</span>
                         </div>
-                        <input type="range" id="qtres" min="0.1" max="10" value="1" step="0.5"
+                        <input type="range" id="qtres" min="0.05" max="5" value="0.2" step="0.05"
                                oninput="document.getElementById('qtresVal').textContent = this.value"
+                               onchange="autoProcess()"
+                               class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                    </div>
+
+                    <!-- Sharpness filter -->
+                    <div>
+                        <div class="flex justify-between text-xs text-slate-300 mb-1">
+                            <span>Enfoque de Contornos (Sharpness):</span>
+                            <span id="sharpnessVal" class="font-mono text-slate-400">Medio</span>
+                        </div>
+                        <input type="range" id="imgSharpness" min="0" max="2" value="1" step="1"
+                               oninput="updateSharpnessLabel(this.value)"
                                onchange="autoProcess()"
                                class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
@@ -350,7 +373,7 @@
 
                 <hr class="border-slate-800">
 
-                <!-- Group 3: Image Preprocessing (Brightness, Contrast, Threshold) -->
+                <!-- Group 4: Image Preprocessing -->
                 <div class="space-y-3">
                     <label class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
                         <i class="fa-solid fa-sliders"></i> Ajustes de Imagen
@@ -368,34 +391,10 @@
                                class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
-                    <!-- Brightness -->
-                    <div>
-                        <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Brillo:</span>
-                            <span id="brightnessVal" class="font-mono text-slate-400">0%</span>
-                        </div>
-                        <input type="range" id="imgBrightness" min="-100" max="100" value="0" step="5"
-                               oninput="document.getElementById('brightnessVal').textContent = this.value + '%'"
-                               onchange="autoProcess()"
-                               class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
-                    </div>
-
                     <!-- Black and White Binarization Toggle -->
                     <div class="flex items-center justify-between pt-1">
                         <span class="text-xs text-slate-300 font-medium">Modo Blanco y Negro Puro</span>
                         <input type="checkbox" id="bwMode" onchange="toggleBWControls(); autoProcess()" class="w-4 h-4 rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-0 cursor-pointer">
-                    </div>
-
-                    <!-- B&W Threshold Slider -->
-                    <div id="bwThresholdWrapper" class="hidden">
-                        <div class="flex justify-between text-xs text-slate-300 mb-1">
-                            <span>Umbral de Corte B/N:</span>
-                            <span id="bwThresholdVal" class="font-mono text-slate-400">128</span>
-                        </div>
-                        <input type="range" id="bwThreshold" min="10" max="245" value="128" step="1"
-                               oninput="document.getElementById('bwThresholdVal').textContent = this.value"
-                               onchange="autoProcess()"
-                               class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
                     </div>
 
                     <!-- Remove White Background Toggle -->
@@ -411,12 +410,11 @@
             <div class="p-4 border-t border-slate-800 bg-slate-900/90 sticky bottom-0">
                 <button onclick="processVectorization()" id="btnProcess" class="w-full py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 cursor-pointer">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    <span>Actualizar Vectorizado</span>
+                    <span>Actualizar Vectorizado 1:1</span>
                 </button>
             </div>
         </aside>
 
-        <!-- MAIN PREVIEW CONTAINER -->
         <section class="flex-1 flex flex-col h-auto lg:h-[calc(100vh-61px)] bg-slate-950 overflow-hidden">
             
             <!-- Toolbar -->
@@ -434,7 +432,7 @@
                     </button>
                     <button onclick="setViewMode('wireframe')" id="btnViewWireframe" class="px-3 py-1.5 text-xs font-medium rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5">
                         <i class="fa-solid fa-diagram-project"></i>
-                        <span>Vista Malla/Nodos</span>
+                        <span>Malla/Nodos</span>
                     </button>
                     <button onclick="setViewMode('original')" id="btnViewOriginal" class="px-3 py-1.5 text-xs font-medium rounded-md text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1.5">
                         <i class="fa-regular fa-image"></i>
@@ -448,13 +446,13 @@
                     <!-- Stats badge -->
                     <div class="hidden xl:flex items-center space-x-3 text-xs bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
                         <div>
-                            <span class="text-slate-400">Rutas:</span>
-                            <span id="statPaths" class="font-mono text-emerald-400 font-bold ml-1">0</span>
+                            <span class="text-slate-400">Dimensiones SVG:</span>
+                            <span id="statDim" class="font-mono text-emerald-400 font-bold ml-1">0 x 0 px</span>
                         </div>
                         <div class="h-3 w-px bg-slate-700"></div>
                         <div>
-                            <span class="text-slate-400">Puntos:</span>
-                            <span id="statNodes" class="font-mono text-emerald-400 font-bold ml-1">0</span>
+                            <span class="text-slate-400">Rutas:</span>
+                            <span id="statPaths" class="font-mono text-emerald-400 font-bold ml-1">0</span>
                         </div>
                         <div class="h-3 w-px bg-slate-700"></div>
                         <div>
@@ -485,8 +483,8 @@
                 <!-- Loader overlay -->
                 <div id="loader" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-30 flex flex-col items-center justify-center">
                     <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin mb-3"></div>
-                    <p class="text-sm font-semibold text-slate-200">Vectorizando imagen...</p>
-                    <p class="text-xs text-slate-400 mt-1">Calculando trazados y curvas Bézier</p>
+                    <p class="text-sm font-semibold text-slate-200">Vectorizando con delineado fino 1:1...</p>
+                    <p class="text-xs text-slate-400 mt-1">Calculando trazados exactos y suavizado cromático</p>
                 </div>
 
                 <!-- Empty State Placeholder -->
@@ -495,9 +493,9 @@
                         <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
                     </div>
                     <h3 class="text-slate-200 font-bold mb-1">No hay imagen cargada</h3>
-                    <p class="text-xs text-slate-400 mb-4">Sube una imagen de tu equipo o selecciona un ejemplo predefinido arriba.</p>
-                    <button onclick="loadSample('logo')" class="px-4 py-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition font-medium">
-                        Cargar Ejemplo Demo
+                    <p class="text-xs text-slate-400 mb-4">Sube una imagen de tu equipo o prueba el ejemplo de la abeja HD.</p>
+                    <button onclick="loadSample('bee')" class="px-4 py-2 text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg transition shadow-md shadow-emerald-500/20">
+                        Probar Ejemplo Abeja HD
                     </button>
                 </div>
 
@@ -508,9 +506,9 @@
                     <div id="svgContainer" class="w-full h-full flex items-center justify-center"></div>
 
                     <!-- Split Comparison Container -->
-                    <div id="splitContainer" class="hidden comparison-slider-container w-full h-full relative border border-slate-700/50 rounded-xl shadow-2xl overflow-hidden max-h-[60vh]">
+                    <div id="splitContainer" class="hidden comparison-slider-container w-full h-full relative border border-slate-700/50 rounded-xl shadow-2xl overflow-hidden max-h-[55vh]">
                         <!-- Bottom Layer: Original Raster -->
-                        <img id="splitOriginalImg" class="max-h-[60vh] max-w-full block object-contain mx-auto" alt="Imagen Original">
+                        <img id="splitOriginalImg" class="max-h-[55vh] max-w-full block object-contain mx-auto" alt="Imagen Original">
                         
                         <!-- Top Layer: SVG Clipped Overlay -->
                         <div id="splitOverlay" class="comparison-overlay">
@@ -522,12 +520,11 @@
                     </div>
 
                     <!-- Pure Raster View -->
-                    <img id="rasterImg" class="hidden object-contain max-w-full max-h-[60vh] rounded-xl shadow-2xl border border-slate-800" alt="Raster Original">
+                    <img id="rasterImg" class="hidden object-contain max-w-full max-h-[55vh] rounded-xl shadow-2xl border border-slate-800" alt="Raster Original">
                 </div>
 
             </div>
 
-            <!-- BOTTOM INSPECTOR & EXPORT BAR -->
             <div class="border-t border-slate-800 bg-slate-900/90 z-20">
                 <div class="flex border-b border-slate-800 text-xs font-medium">
                     <button onclick="switchBottomTab('export')" id="tabExportBtn" class="px-4 py-2.5 text-emerald-400 border-b-2 border-emerald-500 bg-slate-800/40 font-semibold flex items-center gap-2">
@@ -549,7 +546,7 @@
                             <!-- Download SVG -->
                             <button onclick="downloadSVG()" class="p-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl transition flex items-center justify-between shadow-lg shadow-emerald-500/20 cursor-pointer">
                                 <div class="text-left">
-                                    <p class="text-[10px] uppercase tracking-wider font-extrabold text-slate-950/70">Formato Vectorial</p>
+                                    <p class="text-[10px] uppercase tracking-wider font-extrabold text-slate-950/70">Formato Vectorial 1:1</p>
                                     <p class="text-xs font-extrabold">Descargar SVG</p>
                                 </div>
                                 <i class="fa-solid fa-file-arrow-down text-lg"></i>
@@ -563,48 +560,44 @@
                                 </div>
                                 <div class="flex items-center gap-1.5">
                                     <select id="pngScale" class="bg-slate-900 border border-slate-700 text-xs rounded px-1.5 py-1 text-slate-300">
-                                        <option value="1">1x</option>
+                                        <option value="1">1x (Original)</option>
                                         <option value="2" selected>2x</option>
-                                        <option value="4">4x HD</option>
+                                        <option value="4">4x Ultra HD</option>
                                     </select>
-                                    <button onclick="downloadPNG()" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded text-xs font-semibold transition cursor-pointer">
+                                    <button onclick="downloadPNG()" class="px-2.5 py-1 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded text-slate-200 transition">
                                         PNG
                                     </button>
                                 </div>
                             </div>
 
-                            <!-- Copy Code -->
-                            <button onclick="copySVGToClipboard()" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-semibold rounded-xl transition flex items-center justify-between cursor-pointer">
+                            <!-- Copy Code Button -->
+                            <button onclick="copySVGToClipboard()" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold rounded-xl transition flex items-center justify-between cursor-pointer">
                                 <div class="text-left">
-                                    <p class="text-[10px] text-slate-400 uppercase">Portapapeles</p>
-                                    <p class="text-xs font-semibold">Copiar Código SVG</p>
+                                    <p class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Portapapeles</p>
+                                    <p class="text-xs font-bold">Copiar Código SVG</p>
                                 </div>
                                 <i class="fa-regular fa-copy text-lg text-emerald-400"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- TAB 2: PALETTE SWATCHES -->
+                    <!-- TAB 2: PALETTE -->
                     <div id="tabPalette" class="hidden">
-                        <div id="paletteGrid" class="flex flex-wrap gap-2 text-xs">
-                            <span class="text-slate-500 italic">No hay colores extraídos todavía.</span>
+                        <div id="paletteGrid" class="flex flex-wrap gap-2 pt-1">
+                            <!-- Swatches injected via JS -->
                         </div>
                     </div>
 
-                    <!-- TAB 3: SVG CODE EDITOR / VIEWER -->
-                    <div id="tabCode" class="hidden">
-                        <div class="relative">
-                            <textarea id="svgCodeViewer" readonly class="w-full h-28 bg-slate-950 font-mono text-[11px] text-emerald-400 p-3 rounded-lg border border-slate-800 focus:outline-none resize-none" placeholder="El código SVG generado aparecerá aquí..."></textarea>
-                            <button onclick="copySVGToClipboard()" class="absolute top-2 right-2 px-2.5 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition">
-                                <i class="fa-regular fa-copy"></i> Copiar
-                            </button>
-                        </div>
+                    <!-- TAB 3: CODE -->
+                    <div id="tabCode" class="hidden space-y-2">
+                        <textarea id="svgCodeViewer" class="w-full h-28 bg-slate-950 border border-slate-800 rounded-lg p-2 font-mono text-xs text-emerald-400 font-normal focus:outline-none resize-none" readonly></textarea>
                     </div>
 
                 </div>
             </div>
 
         </section>
+
     </main>
 
     <!-- HELP MODAL -->
@@ -613,7 +606,7 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <h3 class="font-bold text-slate-100 flex items-center gap-2">
                     <i class="fa-solid fa-bezier-curve text-emerald-400"></i>
-                    Guía de Vectorización
+                    Guía de Delineado y Escala 1:1
                 </h3>
                 <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-slate-200">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -621,14 +614,8 @@
             </div>
             
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
-                <p><strong class="text-emerald-400">¿Cómo funciona?</strong> Tu imagen se convierte localmente en tu navegador mediante trazado de contornos en ecuaciones de curvas Bézier (SVG). Ninguna imagen se sube a ningún servidor externo.</p>
-                
-                <h4 class="font-semibold text-slate-200 border-b border-slate-800 pb-1">Recomendaciones:</h4>
-                <ul class="list-disc pl-4 space-y-1">
-                    <li><strong>Logotipos:</strong> Usa el perfil <em>Logotipo</em> (8-16 colores) y activa "Eliminar fondo blanco".</li>
-                    <li><strong>Siluetas / Sellos:</strong> Activa <em>Modo Blanco y Negro Puro</em> y ajusta el deslizador de umbral.</li>
-                    <li><strong>Ilustraciones:</strong> Ajusta el "Filtro de Ruido" a 8px o más para eliminar imperfecciones de píxeles.</li>
-                </ul>
+                <p><strong class="text-emerald-400">¿Por qué el SVG mantiene la escala exacta?</strong> A diferencia de otros conversores que agradan arbitrariamente el documento, nuestro sistema fija el `viewBox` exacto a las dimensiones en píxeles de la imagen original.</p>
+                <p>Al abrir el SVG en Photoshop, Illustrator o Figma, abrirá con el **mismo tamaño 1:1**. Sin embargo, al ser un vector con matemáticas de curvas Bézier, podrás ampliarlo al 500% o 1000% sin píxeles ni pérdida de nitidez.</p>
             </div>
 
             <button onclick="toggleHelpModal()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl transition">
@@ -644,7 +631,6 @@
     </div>
 
     <script>
-        // GLOBAL APPLICATION STATE
         let currentSourceImage = null; // Original Loaded HTML Image Element
         let currentSVGData = '';       // Generated SVG String
         let currentZoom = 1;
@@ -652,22 +638,19 @@
         let autoProcessTimeout = null;
         let currentFileName = 'imagen.png';
 
-        // INITIALIZATION ON WINDOW LOAD
         window.onload = function() {
             initSplitSlider();
-            // Automatically load sample logo on startup
             setTimeout(() => {
-                loadSample('logo');
+                loadSample('bee');
             }, 150);
         };
 
-        // NOTIFICATION TOAST
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toastMsg');
             toastMsg.textContent = message;
             toast.classList.remove('hidden', 'toast-animate');
-            void toast.offsetWidth; // Trigger reflow
+            void toast.offsetWidth;
             toast.classList.add('toast-animate');
             setTimeout(() => {
                 toast.classList.add('hidden');
@@ -675,11 +658,14 @@
         }
 
         function toggleHelpModal() {
-            const modal = document.getElementById('helpModal');
-            modal.classList.toggle('hidden');
+            document.getElementById('helpModal').classList.toggle('hidden');
         }
 
-        // FILE DRAG & DROP HANDLERS
+        function updateSharpnessLabel(val) {
+            const labels = ['Desactivado', 'Medio', 'Alto'];
+            document.getElementById('sharpnessVal').textContent = labels[val] || 'Medio';
+        }
+
         function handleDragOver(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -725,78 +711,92 @@
                     onImageLoaded(file.name);
                 };
                 img.onerror = function() {
-                    showToast('No se pudo cargar el archivo de imagen');
+                    showToast('No se pudo cargar la imagen');
                 };
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // GENERATE DEMO SAMPLE IMAGES VIA CANVAS
         function loadSample(type) {
             showLoader(true);
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 400;
-            canvas.height = 400;
+            canvas.width = 300;
+            canvas.height = 300;
 
-            if (type === 'logo') {
+            if (type === 'bee') {
+                currentFileName = 'abeja-ejemplo.png';
+                
+                // Draw dark rich background
+                ctx.fillStyle = '#1c120c';
+                ctx.fillRect(0, 0, 300, 300);
+
+                // Golden Bee Head and Body
+                ctx.fillStyle = '#d97706';
+                ctx.beginPath();
+                ctx.ellipse(130, 160, 40, 30, Math.PI / 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Abdomen
+                ctx.fillStyle = '#eab308';
+                ctx.beginPath();
+                ctx.ellipse(200, 190, 50, 35, Math.PI / 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Red and Blue stripe detail
+                ctx.fillStyle = '#2563eb';
+                ctx.beginPath();
+                ctx.arc(200, 190, 25, 0, Math.PI);
+                ctx.fill();
+
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(215, 205, 20, 0, Math.PI);
+                ctx.fill();
+
+                // Wings with golden glow
+                ctx.fillStyle = 'rgba(251, 191, 36, 0.7)';
+                ctx.beginPath();
+                ctx.ellipse(150, 100, 65, 22, -Math.PI / 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = '#fef08a';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+            } else if (type === 'logo') {
                 currentFileName = 'ejemplo-logo.png';
                 ctx.fillStyle = '#0f172a';
-                ctx.fillRect(0, 0, 400, 400);
+                ctx.fillRect(0, 0, 300, 300);
 
                 ctx.beginPath();
-                ctx.arc(200, 200, 140, 0, Math.PI * 2);
+                ctx.arc(150, 150, 100, 0, Math.PI * 2);
                 ctx.fillStyle = '#10b981';
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.moveTo(140, 280);
-                ctx.lineTo(200, 120);
-                ctx.lineTo(260, 280);
+                ctx.moveTo(100, 210);
+                ctx.lineTo(150, 90);
+                ctx.lineTo(200, 210);
                 ctx.closePath();
                 ctx.fillStyle = '#06b6d4';
-                ctx.fill();
-
-                ctx.beginPath();
-                ctx.arc(200, 210, 45, 0, Math.PI * 2);
-                ctx.fillStyle = '#f59e0b';
                 ctx.fill();
             } else if (type === 'icon') {
                 currentFileName = 'ejemplo-icono.png';
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, 400, 400);
+                ctx.fillRect(0, 0, 300, 300);
 
                 ctx.fillStyle = '#0f172a';
                 ctx.beginPath();
-                ctx.arc(200, 200, 120, 0, Math.PI * 2);
+                ctx.arc(150, 150, 90, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 130px sans-serif';
+                ctx.font = 'bold 90px sans-serif';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText('SVG', 200, 205);
-            } else if (type === 'art') {
-                currentFileName = 'ejemplo-ilustracion.png';
-                ctx.fillStyle = '#1e1b4b';
-                ctx.fillRect(0, 0, 400, 400);
-
-                ctx.fillStyle = '#f43f5e';
-                ctx.beginPath();
-                ctx.arc(200, 200, 130, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#fbbf24';
-                ctx.fillRect(110, 160, 75, 55);
-                ctx.fillRect(215, 160, 75, 55);
-                ctx.fillRect(180, 180, 40, 12);
-
-                ctx.beginPath();
-                ctx.arc(200, 240, 45, 0, Math.PI);
-                ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 10;
-                ctx.stroke();
+                ctx.fillText('SVG', 150, 152);
             }
 
             const img = new Image();
@@ -807,90 +807,77 @@
             img.src = canvas.toDataURL('image/png');
         }
 
-        // TRIGGERED WHEN SOURCE IMAGE IS FULLY READY
         function onImageLoaded(name) {
-            // Update sidebar info card & preview thumbnail
             document.getElementById('uploadPlaceholder').classList.add('hidden');
             document.getElementById('loadedFileInfo').classList.remove('hidden');
             
             const sidebarPreviewImg = document.getElementById('sidebarPreviewImg');
             sidebarPreviewImg.src = currentSourceImage.src;
 
-            const width = currentSourceImage.naturalWidth || currentSourceImage.width || 400;
-            const height = currentSourceImage.naturalHeight || currentSourceImage.height || 400;
+            const width = currentSourceImage.naturalWidth || currentSourceImage.width || 300;
+            const height = currentSourceImage.naturalHeight || currentSourceImage.height || 300;
 
             document.getElementById('loadedFileName').textContent = name || 'imagen.png';
             document.getElementById('loadedFileDetails').textContent = `${width} x ${height} px`;
+            document.getElementById('statDim').textContent = `${width} x ${height} px`;
 
-            // Hide empty state placeholder
             document.getElementById('emptyState').classList.add('hidden');
             document.getElementById('zoomContainer').classList.remove('hidden');
 
-            // Update raster original images in preview tabs
             document.getElementById('rasterImg').src = currentSourceImage.src;
             document.getElementById('splitOriginalImg').src = currentSourceImage.src;
 
             processVectorization();
         }
 
-        // B&W CONTROLS TOGGLE
         function toggleBWControls() {
             const isBW = document.getElementById('bwMode').checked;
-            const bwWrapper = document.getElementById('bwThresholdWrapper');
             if (isBW) {
-                bwWrapper.classList.remove('hidden');
                 document.getElementById('numberofcolors').value = 2;
                 document.getElementById('numColorsVal').textContent = '2';
-            } else {
-                bwWrapper.classList.add('hidden');
             }
         }
 
-        // APPLY PRESET PROFILES
         function applyPreset(preset) {
             const numColors = document.getElementById('numberofcolors');
-            const blur = document.getElementById('blurradius');
             const omit = document.getElementById('pathomit');
             const qtres = document.getElementById('qtres');
+            const colorBoost = document.getElementById('colorBoost');
             const bwMode = document.getElementById('bwMode');
             const removeBg = document.getElementById('removeWhiteBg');
 
             bwMode.checked = false;
-            toggleBWControls();
 
-            if (preset === 'logo') {
-                numColors.value = 12;
-                blur.value = 0;
+            if (preset === 'fine_art') {
+                numColors.value = 48;
+                omit.value = 2;
+                qtres.value = 0.2;
+                colorBoost.value = 15;
+                removeBg.checked = false;
+            } else if (preset === 'logo') {
+                numColors.value = 16;
                 omit.value = 8;
                 qtres.value = 1;
+                colorBoost.value = 0;
                 removeBg.checked = true;
             } else if (preset === 'bw') {
                 bwMode.checked = true;
-                toggleBWControls();
                 numColors.value = 2;
-                blur.value = 0;
-                omit.value = 12;
+                omit.value = 4;
                 qtres.value = 0.5;
                 removeBg.checked = false;
-            } else if (preset === 'detailed') {
-                numColors.value = 32;
-                blur.value = 0;
-                omit.value = 2;
-                qtres.value = 0.5;
-                removeBg.checked = false;
-            } else if (preset === 'artistic') {
-                numColors.value = 16;
-                blur.value = 1;
-                omit.value = 16;
-                qtres.value = 2;
+            } else if (preset === 'max_colors') {
+                numColors.value = 64;
+                omit.value = 1;
+                qtres.value = 0.1;
+                colorBoost.value = 25;
                 removeBg.checked = false;
             }
 
-            // Update UI labels
             document.getElementById('numColorsVal').textContent = numColors.value;
-            document.getElementById('blurRadiusVal').textContent = blur.value + ' px';
             document.getElementById('pathOmitVal').textContent = omit.value + ' px';
             document.getElementById('qtresVal').textContent = qtres.value;
+            document.getElementById('colorBoostVal').textContent = '+' + colorBoost.value + '%';
 
             processVectorization();
         }
@@ -902,7 +889,6 @@
             }, 250);
         }
 
-        // MAIN VECTORIZATION PROCESSOR
         function processVectorization() {
             if (!currentSourceImage) return;
 
@@ -917,86 +903,117 @@
 
             setTimeout(() => {
                 try {
-                    // Pre-process canvas image (adjust contrast, brightness, b&w)
-                    const processedCanvas = applyCanvasPreprocessing(currentSourceImage);
+                    const originalWidth = currentSourceImage.naturalWidth || currentSourceImage.width || 300;
+                    const originalHeight = currentSourceImage.naturalHeight || currentSourceImage.height || 300;
 
-                    // Read current user options
+                    const { canvas: processedCanvas, scaleFactor } = applyCanvasPreprocessing(currentSourceImage);
+
                     const tracerOptions = {
                         numberofcolors: parseInt(document.getElementById('numberofcolors').value),
-                        mincolorratio: parseFloat(document.getElementById('mincolorratio').value),
-                        blurradius: parseInt(document.getElementById('blurradius').value),
+                        mincolorratio: 0.0001, // Keep delicate colors alive
+                        blurradius: 0,
                         pathomit: parseInt(document.getElementById('pathomit').value),
                         qtres: parseFloat(document.getElementById('qtres').value),
-                        scale: 1,
+                        ltres: parseFloat(document.getElementById('qtres').value),
+                        scale: 1 / scaleFactor, // Scale back to 1:1 original coordinates!
                         strokewidth: 1,
                         viewbox: true,
                         desc: false
                     };
 
-                    // Run ImageTracer
                     const imgData = processedCanvas.getContext('2d').getImageData(0, 0, processedCanvas.width, processedCanvas.height);
                     let svgString = ImageTracer.imagedataToSVG(imgData, tracerOptions);
 
-                    // Remove white background paths if toggle enabled
                     if (document.getElementById('removeWhiteBg').checked) {
                         svgString = removeWhiteBackgroundFromSVG(svgString);
                     }
 
+                    // Enforce exact 1:1 Dimensions inside SVG header for Photoshop & Illustrator
+                    if (document.getElementById('keepExactSize').checked) {
+                        svgString = enforceExactSVGSize(svgString, originalWidth, originalHeight);
+                    }
+
                     currentSVGData = svgString;
 
-                    // Update UI renders & Metrics
                     updateSVGDisplay();
-                    analyzeSVG(svgString);
-
+                    analyzeSVG(currentSVGData);
+                    showToast('Vectorización 1:1 completada');
                 } catch (err) {
-                    console.error('Error durante la vectorización:', err);
-                    showToast('Ocurrió un error al procesar la imagen');
+                    console.error("Error al vectorizar:", err);
+                    showToast('Error procesando la imagen');
                 } finally {
                     showLoader(false);
                     updateStatusBadge(false);
                 }
-            }, 60);
+            }, 50);
         }
 
-        // CANVAS PRE-PROCESSING (Brightness, Contrast, B&W Binarization)
+        function enforceExactSVGSize(svgStr, width, height) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(svgStr, 'image/svg+xml');
+            const svgEl = doc.querySelector('svg');
+            
+            if (svgEl) {
+                svgEl.setAttribute('width', width);
+                svgEl.setAttribute('height', height);
+                svgEl.setAttribute('viewBox', `0 0 ${width} ${height}`);
+                return new XMLSerializer().serializeToString(doc);
+            }
+            return svgStr;
+        }
+
         function applyCanvasPreprocessing(img) {
+            const rawWidth = img.naturalWidth || img.width || 300;
+            const rawHeight = img.naturalHeight || img.height || 300;
+
+            const enableSuper = document.getElementById('enableSuperSample')?.checked ?? true;
+            let scaleFactor = 1;
+            if (enableSuper && Math.max(rawWidth, rawHeight) < 1200) {
+                scaleFactor = Math.min(4, 1200 / Math.max(rawWidth, rawHeight));
+            }
+
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = img.naturalWidth || img.width || 400;
-            canvas.height = img.naturalHeight || img.height || 400;
+            canvas.width = Math.round(rawWidth * scaleFactor);
+            canvas.height = Math.round(rawHeight * scaleFactor);
 
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
             const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = imgData.data;
 
-            const brightness = parseInt(document.getElementById('imgBrightness').value);
             const contrast = parseInt(document.getElementById('imgContrast').value);
+            const colorBoost = parseInt(document.getElementById('colorBoost').value);
             const isBW = document.getElementById('bwMode').checked;
-            const bwThreshold = parseInt(document.getElementById('bwThreshold').value);
 
             const factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+            const boostFactor = 1 + (colorBoost / 100);
 
             for (let i = 0; i < data.length; i += 4) {
                 let r = data[i];
                 let g = data[i + 1];
                 let b = data[i + 2];
 
-                if (brightness !== 0) {
-                    r += brightness;
-                    g += brightness;
-                    b += brightness;
-                }
-
+                // Contrast
                 if (contrast !== 0) {
                     r = factor * (r - 128) + 128;
                     g = factor * (g - 128) + 128;
                     b = factor * (b - 128) + 128;
                 }
 
+                // Saturation / Color boost
+                if (colorBoost > 0) {
+                    const gray = 0.2989 * r + 0.5870 * g + 0.1140 * b;
+                    r = gray + (r - gray) * boostFactor;
+                    g = gray + (g - gray) * boostFactor;
+                    b = gray + (b - gray) * boostFactor;
+                }
+
                 if (isBW) {
                     const avg = (r + g + b) / 3;
-                    const val = avg < bwThreshold ? 0 : 255;
+                    const val = avg < 128 ? 0 : 255;
                     r = val;
                     g = val;
                     b = val;
@@ -1008,10 +1025,46 @@
             }
 
             ctx.putImageData(imgData, 0, 0);
-            return canvas;
+
+            // Apply Sharpness Filter if needed
+            const sharpnessLvl = parseInt(document.getElementById('imgSharpness').value);
+            if (sharpnessLvl > 0) {
+                applyUnsharpMask(ctx, canvas.width, canvas.height, sharpnessLvl);
+            }
+
+            return { canvas, scaleFactor };
         }
 
-        // REMOVE WHITE BACKGROUND PATHS FROM SVG STRING
+        function applyUnsharpMask(ctx, width, height, level) {
+            const weights = level === 2 
+                ? [0, -1, 0, -1, 5, -1, 0, -1, 0] 
+                : [0, -0.5, 0, -0.5, 3, -0.5, 0, -0.5, 0];
+            
+            const imgData = ctx.getImageData(0, 0, width, height);
+            const pixels = imgData.data;
+            const copy = new Uint8ClampedArray(pixels);
+
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    for (let c = 0; c < 3; c++) {
+                        let i = (y * width + x) * 4 + c;
+                        let sum = 
+                            copy[((y-1)*width + (x-1))*4 + c] * weights[0] +
+                            copy[((y-1)*width + x)*4 + c]     * weights[1] +
+                            copy[((y-1)*width + (x+1))*4 + c] * weights[2] +
+                            copy[(y*width + (x-1))*4 + c]     * weights[3] +
+                            copy[i]                           * weights[4] +
+                            copy[(y*width + (x+1))*4 + c]     * weights[5] +
+                            copy[((y+1)*width + (x-1))*4 + c] * weights[6] +
+                            copy[((y+1)*width + x)*4 + c]     * weights[7] +
+                            copy[((y+1)*width + (x+1))*4 + c] * weights[8];
+                        pixels[i] = Math.min(255, Math.max(0, sum));
+                    }
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+        }
+
         function removeWhiteBackgroundFromSVG(svgStr) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(svgStr, 'image/svg+xml');
@@ -1027,7 +1080,6 @@
             return new XMLSerializer().serializeToString(doc);
         }
 
-        // UPDATE RENDERED SVG IN VIEW CONTAINERS
         function updateSVGDisplay() {
             const svgContainer = document.getElementById('svgContainer');
             const splitSvgWrapper = document.getElementById('splitSvgWrapper');
@@ -1035,15 +1087,14 @@
 
             svgContainer.innerHTML = currentSVGData;
             splitSvgWrapper.innerHTML = currentSVGData;
-            codeViewer.value = currentSVGData;
+            if (codeViewer) codeViewer.value = currentSVGData;
 
-            // Ensure responsive SVG dimensions
             [svgContainer, splitSvgWrapper].forEach(parent => {
                 const svgEl = parent.querySelector('svg');
                 if (svgEl) {
                     svgEl.style.width = '100%';
                     svgEl.style.height = 'auto';
-                    svgEl.style.maxHeight = '60vh';
+                    svgEl.style.maxHeight = '55vh';
                     svgEl.style.objectFit = 'contain';
                     svgEl.style.display = 'block';
                 }
@@ -1052,19 +1103,17 @@
             setViewMode(viewMode);
         }
 
-        // UPDATE STATUS BADGE IN HEADER
         function updateStatusBadge(isProcessing) {
             const badge = document.getElementById('headerStatusBadge');
             if (isProcessing) {
                 badge.className = "px-2 py-0.5 text-[10px] font-semibold rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center gap-1";
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> Procesando...';
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span> Procesando 1:1...';
             } else {
                 badge.className = "px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1";
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Vector Listo';
+                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Vector Listo 1:1';
             }
         }
 
-        // ANALYZE METRICS AND PALETTE
         function analyzeSVG(svgStr) {
             const parser = new DOMParser();
             const doc = parser.parseFromString(svgStr, 'image/svg+xml');
@@ -1072,21 +1121,13 @@
             const paths = doc.querySelectorAll('path');
             document.getElementById('statPaths').textContent = paths.length;
 
-            let totalNodes = 0;
             const colors = new Set();
-
             paths.forEach(p => {
-                const d = p.getAttribute('d') || '';
-                const matches = d.match(/[LMCQSZ]/gi);
-                if (matches) totalNodes += matches.length;
-
                 const fill = p.getAttribute('fill');
                 if (fill && fill !== 'none' && p.getAttribute('fill-opacity') !== '0') {
                     colors.add(fill);
                 }
             });
-
-            document.getElementById('statNodes').textContent = totalNodes;
 
             const bytes = new Blob([svgStr]).size;
             const kb = (bytes / 1024).toFixed(1);
@@ -1128,7 +1169,6 @@
             });
         }
 
-        // VIEW MODE SWITCHER
         function setViewMode(mode) {
             viewMode = mode;
 
@@ -1162,7 +1202,6 @@
             }
         }
 
-        // SPLIT COMPARISON SLIDER DRAGGING LOGIC
         function initSplitSlider() {
             const container = document.getElementById('splitContainer');
             const handle = document.getElementById('splitHandle');
@@ -1209,7 +1248,6 @@
             });
         }
 
-        // ZOOM CONTROLS
         function changeZoom(delta) {
             currentZoom = Math.min(Math.max(0.2, currentZoom + delta), 4);
             applyZoom();
@@ -1226,7 +1264,6 @@
             document.getElementById('zoomLevel').textContent = `${Math.round(currentZoom * 100)}%`;
         }
 
-        // BOTTOM INSPECTOR TABS
         function switchBottomTab(tabName) {
             ['export', 'palette', 'code'].forEach(tab => {
                 document.getElementById(`tab${capitalize(tab)}`).classList.add('hidden');
@@ -1243,7 +1280,6 @@
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
 
-        // EXPORT FUNCTIONS
         function downloadSVG() {
             if (!currentSVGData) {
                 showToast('No hay SVG generado para descargar');
@@ -1254,13 +1290,13 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = currentFileName.replace(/\.[^/.]+$/, "") + '-vector.svg';
+            a.download = currentFileName.replace(/\.[^/.]+$/, "") + '-1x-vector.svg';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showToast('SVG descargado correctamente');
+            showToast('SVG 1:1 descargado correctamente');
         }
 
         function downloadPNG() {
@@ -1271,9 +1307,11 @@
             
             if (!svgEl) return;
 
-            const viewBox = svgEl.viewBox.baseVal;
-            const width = (viewBox && viewBox.width ? viewBox.width : 500) * scale;
-            const height = (viewBox && viewBox.height ? viewBox.height : 500) * scale;
+            const originalW = currentSourceImage.naturalWidth || currentSourceImage.width || 300;
+            const originalH = currentSourceImage.naturalHeight || currentSourceImage.height || 300;
+
+            const width = originalW * scale;
+            const height = originalH * scale;
 
             const canvas = document.createElement('canvas');
             canvas.width = width;
